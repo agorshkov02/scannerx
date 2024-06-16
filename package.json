@@ -1,8 +1,8 @@
 {
-  "name": "scanner",
+  "name": "scannerx",
   "version": "1.0.0",
   "description": "An Electron application with React and TypeScript",
-  "main": "./out/main/index.js",
+  "main": "./dist/main/index.js",
   "author": "agorshkov02",
   "homepage": "https://agor1.ru/",
   "scripts": {
