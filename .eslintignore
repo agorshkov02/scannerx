@@ -1,0 +1,7 @@
+.idea
+.vscode
+do_not_touch
+node_modules
+dist
+out
+.gitignore

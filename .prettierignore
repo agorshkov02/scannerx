@@ -1,0 +1,11 @@
+.idea
+.vscode
+do_not_touch
+node_modules
+dist
+out
+.gitignore
+pnpm-lock.yaml
+LICENSE.md
+tsconfig.json
+tsconfig.*.json

@@ -1,0 +1,8 @@
+.idea
+.vscode
+do_not_touch
+node_modules
+dist
+out
+.DS_Store
+*.log*
