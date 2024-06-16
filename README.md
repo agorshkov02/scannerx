@@ -1,2 +1,4 @@
-1. Сортировка, те которые заполнены вверх, не которые не заполнены не вверх
-2. Сортировка по названию
+### Installation:
+1. Download the latest release version as `.zip` archive.
+2. Unzip `.zip` archive.
+3. Copy the `do_not_touch` from the app directory of the previous version to the app directory of the downloaded version (optional).
