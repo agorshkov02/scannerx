@@ -29,8 +29,8 @@ class EditStore {
     return this._selectedCells
   }
 
-  public get isSelectedFew(): boolean {
-    return this._selectedCells.length > 1
+  public get isSelectedExclusive(): boolean {
+    return this._selectedCells.length === 1
   }
 
   public isSelected(cell: Cell): boolean {
@@ -42,6 +42,10 @@ class EditStore {
         return dir === selectedDir && vendor === selectedVendor
       })
     )
+  }
+
+  public selectCellExclusive(cell: Cell): void {
+    this._selectedCells = [cell]
   }
 
   public selectCell(cell: Cell): void {

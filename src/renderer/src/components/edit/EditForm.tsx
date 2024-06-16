@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography'
 import { observer } from 'mobx-react-lite'
 import { useMemo } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { EMPTY_CELL_VALUE } from '../../@types'
 
 const SELECTED_CELLS_CROWDED_BOUND = 8
 
@@ -29,13 +30,10 @@ type EditFormFormData = {
 const EditForm = observer(() => {
   const editStore = useEditStore()
 
-  const { comments, state } = useMemo(() => {
-    if (editStore.isSelectedFew) {
-      return { comments: '', state: '-' }
-    } else {
-      return editStore.selectedCells[0].value
-    }
-  }, editStore.selectedCells)
+  const { comments, state } = useMemo(
+    () => (editStore.isSelectedExclusive ? editStore.selectedCells[0].value : EMPTY_CELL_VALUE),
+    editStore.selectedCells
+  )
 
   const isSelectedCellsCrowded = useMemo(() => editStore.selectedCells.length > SELECTED_CELLS_CROWDED_BOUND, [editStore.selectedCells])
 
@@ -58,9 +56,9 @@ const EditForm = observer(() => {
 
   const onSubmit: SubmitHandler<EditFormFormData> = (data: EditFormFormData) => {
     editStore.selectedCells.forEach((selectedCell) => {
-      const { dir, vendor } = selectedCell.key
-      const { comments, state } = { comments: data.comments, state: data.state }
-      window.persistApi.setSync({ dir, vendor }, { comments, state }) // TODO: through store
+      const state = data.state
+      const comments = !data.comments && !editStore.isSelectedExclusive ? selectedCell.value.comments : data.comments
+      window.persistApi.setSync({ dir: selectedCell.key.dir, vendor: selectedCell.key.vendor }, { comments, state }) // TODO: through store
     })
     editStore.stopEditing()
   }

@@ -32,14 +32,20 @@ const MainTableCell = observer(({ cell }: MainTableCellProps) => {
         </Typography>
       }
     >
-      <TableCell onClick={() => editStore.selectCell(cell)} sx={{ border: 'none', p: 0 }}>
+      <TableCell
+        onClick={(event) => {
+          event.shiftKey ? editStore.selectCell(cell) : editStore.selectCellExclusive(cell)
+        }}
+        sx={{ border: 'none', p: 0 }}
+      >
         <CustomizedStack
           sx={{
             ...useCellHighlight(cell),
             border: editStore.isSelected(cell) ? `3px solid ${blue[500]}` : '1px solid rgba(0, 0, 0, 0.12)',
             borderRadius: '8px',
             m: '4px',
-            p: 1
+            p: 1,
+            userSelect: 'none'
           }}
         >
           <Box sx={{ maxWidth: '128px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cell.value.state}</Box>
