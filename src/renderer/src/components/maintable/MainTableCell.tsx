@@ -73,6 +73,7 @@ const CustomizedStack = ({ children, ...props }: CustomizedStackProps) => (
 type OpenFormIconProps = {
   onClick: MouseEventHandler<SVGSVGElement>
 }
+
 const OpenFormIcon = ({ onClick }: OpenFormIconProps) => <Edit fontSize="inherit" onClick={onClick} />
 
 export { MainTableCell }
