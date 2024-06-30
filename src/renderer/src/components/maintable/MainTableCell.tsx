@@ -21,15 +21,15 @@ const MainTableCell = observer(({ cell }: MainTableCellProps) => {
   return (
     <ScannerXTooltip
       title={
-        <Typography>
-          <Box>{cell.value.state}</Box>
+        <Box>
+          <Typography>{cell.value.state}</Typography>
           {!!cell.value.comments && (
             <Box>
               <Divider sx={{ my: 1 }}></Divider>
-              <Box>{cell.value.comments}</Box>
+              <Typography>{cell.value.comments}</Typography>
             </Box>
           )}
-        </Typography>
+        </Box>
       }
     >
       <TableCell

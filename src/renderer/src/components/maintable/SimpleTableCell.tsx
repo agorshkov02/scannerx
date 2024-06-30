@@ -9,7 +9,7 @@ const SimpleTableCell = ({ children, ...props }: SimpleTableCellProps) => (
       maxWidth: '128px',
       minWidth: '128px',
       overflow: 'hidden',
-      padding: '8px',
+      p: '8px 8px 8px 12px',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap'
     }}

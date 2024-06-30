@@ -1,6 +1,6 @@
 import { MainTableCell } from '@components/maintable/MainTableCell'
 import { SimpleTableCell } from '@components/maintable/SimpleTableCell'
-import { ArrowDownward, ArrowUpward } from '@mui/icons-material'
+import { ArrowDownward, ArrowUpward, Sort } from '@mui/icons-material'
 import Box from '@mui/material/Box'
 import Stack, { StackProps } from '@mui/material/Stack'
 import Table from '@mui/material/Table'
@@ -8,9 +8,17 @@ import TableBody, { TableBodyProps } from '@mui/material/TableBody'
 import TableHead, { TableHeadProps } from '@mui/material/TableHead'
 import TableRow, { TableRowProps } from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
-import { MouseEventHandler, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
-type Sort = 'asc' | 'desc'
+type Sort = {
+  direction: 'asc' | 'desc'
+  vendor: string
+}
+
+const DEFAULT_SORT: Sort = {
+  direction: 'asc',
+  vendor: 'Directory'
+}
 
 type MainTableProps = {
   dirs: string[]
@@ -18,60 +26,112 @@ type MainTableProps = {
 }
 
 const MainTable = ({ dirs, vendors }: MainTableProps) => {
-  const [sort, setSort] = useState<Sort>('asc')
+  const [sort, setSort] = useState<Sort>(DEFAULT_SORT)
 
   const isEmpty = useMemo(() => dirs.length === 0 || vendors.length === 0, [dirs, vendors])
 
-  const sortedDirs = useMemo(() => {
-    const reverseNeeded = sort === 'desc'
-    return reverseNeeded ? dirs.sort().reverse() : dirs.sort()
-  }, [sort, dirs])
+  const now = useMemo(() => Date.now(), [])
+
+  const rows = useMemo(() => {
+    const firstRow = ['Directory', ...vendors].map((vendor) => ({
+      key: { dir: undefined, vendor },
+      value: { state: vendor, comments: undefined } // use vendor as state
+    }))
+
+    const rows = dirs.map((dir) => {
+      const firstCell = {
+        key: { dir, vendor: 'Directory' },
+        value: { state: dir, comments: undefined } // use dir as state
+      }
+
+      return [
+        firstCell,
+        ...vendors.map((vendor) => {
+          const key = { dir, vendor }
+          const value = window.persistApi.getSync(key)
+          return { key, value }
+        })
+      ]
+    })
+
+    rows.sort((row1, row2) => {
+      const state1 = row1.find((cell) => {
+        const {
+          key: { vendor }
+        } = cell
+        return sort.vendor === vendor 
+      })?.value?.state
+
+      const state2 = row2.find((cell) => {
+        const {
+          key: { vendor }
+        } = cell
+        return sort.vendor === vendor
+      })?.value?.state
+
+      if (!state1 && !state2) {
+        return 0
+      }
+
+      if (!state1) {
+        return -1
+      }
+
+      if (!state2) {
+        return 1
+      }
+
+      const localCompare = state1.localeCompare(state2)
+      return sort.direction === 'asc' ? localCompare : -localCompare
+    })
+
+    return [firstRow, ...rows]
+  }, [dirs, vendors, sort])
 
   return (
     <>
       {isEmpty && (
-        <Typography sx={{ textAlign: 'center' }}>
-          <Box>Check that the path you specified exists and is available, and that at least one vendor is specified.</Box>
-        </Typography>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography>Check that the path you specified exists and is available, and that at least one vendor is specified.</Typography>
+        </Box>
       )}
       {!isEmpty && (
         <Table sx={{ m: '0 auto 16px auto', tableLayout: 'auto', width: 'auto' }}>
-          <Box sx={{ m: '8px' }}>
-            <MainTableHead>
-              <MainTableRow>
-                <SimpleTableCell>
-                  <CustomizedStack>
-                    Directory
-                    {sort === 'asc' ? <DownwardSortIcon onClick={() => setSort('desc')} /> : <UpwardSortIcon onClick={() => setSort('asc')} />}
-                  </CustomizedStack>
-                </SimpleTableCell>
-                {[...vendors].map((vendor, i) => (
-                  <SimpleTableCell key={`${vendor}:${i}`}>{vendor}</SimpleTableCell>
+          <MainTableHead>
+            <MainTableRow>
+              {rows[0].map((cell, i) => {
+                const {
+                  key: { vendor }
+                } = cell
+                return (
+                  <SimpleTableCell key={`${now}:${i}`}>
+                    <CustomizedStack>
+                      {vendor}
+                      {sort.vendor === vendor ? (
+                        sort.direction === 'asc' ? (
+                          <ArrowDownward fontSize="inherit" onClick={() => setSort({ direction: 'desc', vendor })} />
+                        ) : (
+                          <ArrowUpward fontSize="inherit" onClick={() => setSort({ direction: 'asc', vendor })} />
+                        )
+                      ) : (
+                        <Sort fontSize="inherit" onClick={() => setSort({ direction: 'asc', vendor })} />
+                      )}
+                    </CustomizedStack>
+                  </SimpleTableCell>
+                )
+              })}
+            </MainTableRow>
+          </MainTableHead>
+          <MainTableBody>
+            {rows.slice(1).map((row, i) => (
+              <MainTableRow key={`${now}:${i}`}>
+                <SimpleTableCell>{row[0].value.state}</SimpleTableCell>
+                {row.slice(1).map((cell, j) => (
+                  <MainTableCell key={`${now}:${i}:${j}`} cell={cell} />
                 ))}
               </MainTableRow>
-            </MainTableHead>
-            <MainTableBody>
-              {sortedDirs.map((dir, i) => (
-                <MainTableRow key={`${dir}:${i}`}>
-                  <SimpleTableCell>{dir}</SimpleTableCell>
-                  {vendors.map((vendor, j) => {
-                    const key = { dir, vendor }
-                    return (
-                      <MainTableCell
-                        cell={{ key, value: window.persistApi.getSync(key) }}
-                        key={`${dir}:${vendor}:${j}`}
-                        sx={{
-                          width: 'auto',
-                          whiteSpace: 'nowrap',
-                          padding: '8px'
-                        }}
-                      />
-                    )
-                  })}
-                </MainTableRow>
-              ))}
-            </MainTableBody>
-          </Box>
+            ))}
+          </MainTableBody>
         </Table>
       )}
     </>
@@ -89,14 +149,6 @@ const MainTableHead = ({ children, ...props }: MainTableHeadProps) => <TableHead
 type MainTableRowProps = TableRowProps
 
 const MainTableRow = ({ children, ...props }: MainTableRowProps) => <TableRow {...props}>{children}</TableRow>
-
-type SortIconProps = {
-  onClick: MouseEventHandler<SVGSVGElement>
-}
-
-const DownwardSortIcon = ({ onClick }: SortIconProps) => <ArrowDownward fontSize="inherit" onClick={onClick} />
-
-const UpwardSortIcon = ({ onClick }: SortIconProps) => <ArrowUpward fontSize="inherit" onClick={onClick} />
 
 // TODO: cleanup
 type CustomizedStackProps = Omit<StackProps, 'alignItems' | 'direction' | 'gap'>
