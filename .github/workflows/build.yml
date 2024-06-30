@@ -1,0 +1,11 @@
+on: push
+jobs:
+  build:
+    container: node:20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install
+        name: run 'npm install' command
+      - run: npm run build
+        name: run 'npm run build' command
