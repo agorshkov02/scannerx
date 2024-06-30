@@ -92,7 +92,7 @@ const MainTable = ({ dirs, vendors }: MainTableProps) => {
     <>
       {isEmpty && (
         <Box sx={{ textAlign: 'center' }}>
-          <Typography>Check that the path you specified exists and is available, and that at least one vendor is specified.</Typography>
+          <Typography color='error'>Check that the path you specified exists and is available, and that at least one vendor is specified.</Typography>
         </Box>
       )}
       {!isEmpty && (

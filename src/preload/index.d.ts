@@ -12,6 +12,7 @@ declare global {
       setIntervalSync(interval: number)
       getPathSync(): string | undefined
       setPathSync(path: string)
+      getPathVariants(): string[]
     }
     vendorsApi: {
       getVendorsSync(): string[]

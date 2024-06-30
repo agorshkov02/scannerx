@@ -44,6 +44,9 @@ contextBridge.exposeInMainWorld('settingsApi', {
   },
   setPathSync(path: string) {
     SETTINGS_SERVICE_INSTANCE.setPathSync(path)
+  },
+  getPathVariants(): string[] {
+    return SETTINGS_SERVICE_INSTANCE.getPathVariants()
   }
 })
 

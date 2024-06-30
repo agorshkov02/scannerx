@@ -15,6 +15,14 @@ class SettingsService {
 
   public setPathSync(path: string) {
     settings.setSync('scan.path', path)
+    const pathVariants = this.getPathVariants()
+    if (!pathVariants.includes(path)) {
+      settings.setSync('pathVariants', [...pathVariants, path])
+    }
+  }
+
+  public getPathVariants(): string[] {
+    return settings.getSync('pathVariants') as string[] ?? []
   }
 }
 

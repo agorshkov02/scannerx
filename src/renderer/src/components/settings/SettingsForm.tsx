@@ -1,4 +1,5 @@
 import { mapFieldError } from '@components/commons/utils'
+import Autocomplete from '@mui/material/Autocomplete'
 import Button, { ButtonProps } from '@mui/material/Button'
 import Stack, { StackProps } from '@mui/material/Stack'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
@@ -13,14 +14,17 @@ type SettingsFormData = {
 }
 
 const SettingsForm = () => {
+  const interval = window.settingsApi.getIntervalSync() ?? 0
+  const path = window.settingsApi.getPathSync() ?? ''
+  
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm<SettingsFormData>({
     defaultValues: {
-      interval: window.settingsApi.getIntervalSync() ?? 0,
-      path: window.settingsApi.getPathSync() ?? ''
+      interval,
+      path
     }
   })
 
@@ -31,19 +35,25 @@ const SettingsForm = () => {
 
   return (
     <CustomizedStack component="form" onSubmit={handleSubmit(onSubmit)}>
-      <PathTextField
-        {...mapFieldError(errors.path, `Path must be specified, be less than ${PATH_MAX_LENGTH} characters`)}
-        InputProps={{
-          inputProps: {
-            ...register('path', {
+      <Autocomplete
+        defaultValue={path}
+        freeSolo
+        fullWidth
+        options={window.settingsApi.getPathVariants()}
+        renderInput={(params) => (
+          <TextField
+            label="Path"
+            {...mapFieldError(errors.path, `Path must be specified, be less than ${PATH_MAX_LENGTH} characters`)}
+            {...register('path', {
               maxLength: {
                 value: PATH_MAX_LENGTH,
                 message: `Path length must be less than ${PATH_MAX_LENGTH} characters`
               },
               required: 'Path must be specified'
-            })
-          }
-        }}
+            })}
+            {...params}
+          />
+        )}
       />
       <IntervalTextField
         {...mapFieldError(errors.interval, `Interval must be specified, be less than ${INTERVAL_MAX_SECONDS} seconds`)}
@@ -63,10 +73,6 @@ const SettingsForm = () => {
     </CustomizedStack>
   )
 }
-
-type PathTextFieldProps = Omit<CustomizedTextFieldProps, 'label'>
-
-const PathTextField = (props: PathTextFieldProps) => <CustomizedTextField label="Path" {...props} />
 
 type IntervalTextFieldProps = Omit<CustomizedTextFieldProps, 'label' | 'type'>
 

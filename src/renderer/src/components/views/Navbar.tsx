@@ -33,10 +33,10 @@ const NavigateIconButton = ({ children, to }: NavigateIconButtonProps) => {
 }
 
 // TODO: cleanup
-type CustomizedStackProps = Omit<StackProps, 'direction' | 'justifyContent' | 'spacing' | 'sx'>
+type CustomizedStackProps = Omit<StackProps, 'direction' | 'gap' | 'justifyContent'>
 
 const CustomizedStack = ({ children, ...props }: CustomizedStackProps) => (
-  <Stack direction="row" justifyContent="end" spacing={2} {...props}>
+  <Stack direction="row" gap={2} justifyContent="end" {...props}>
     {children}
   </Stack>
 )
