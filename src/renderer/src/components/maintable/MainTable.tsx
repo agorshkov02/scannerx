@@ -42,7 +42,7 @@ const MainTable = ({ dirs, vendors }: MainTableProps) => {
                 <SimpleTableCell>
                   <CustomizedStack>
                     Directory
-                    {sort === 'asc' ? <DownwardFormIcon onClick={() => setSort('desc')} /> : <UpwardSortIcon onClick={() => setSort('asc')} />}
+                    {sort === 'asc' ? <DownwardSortIcon onClick={() => setSort('desc')} /> : <UpwardSortIcon onClick={() => setSort('asc')} />}
                   </CustomizedStack>
                 </SimpleTableCell>
                 {[...vendors].map((vendor, i) => (
@@ -90,13 +90,13 @@ type MainTableRowProps = TableRowProps
 
 const MainTableRow = ({ children, ...props }: MainTableRowProps) => <TableRow {...props}>{children}</TableRow>
 
-type SortIconIconProps = {
+type SortIconProps = {
   onClick: MouseEventHandler<SVGSVGElement>
 }
 
-const DownwardFormIcon = ({ onClick }: SortIconIconProps) => <ArrowDownward fontSize="inherit" onClick={onClick} />
+const DownwardSortIcon = ({ onClick }: SortIconProps) => <ArrowDownward fontSize="inherit" onClick={onClick} />
 
-const UpwardSortIcon = ({ onClick }: SortIconIconProps) => <ArrowUpward fontSize="inherit" onClick={onClick} />
+const UpwardSortIcon = ({ onClick }: SortIconProps) => <ArrowUpward fontSize="inherit" onClick={onClick} />
 
 // TODO: cleanup
 type CustomizedStackProps = Omit<StackProps, 'alignItems' | 'direction' | 'gap'>
