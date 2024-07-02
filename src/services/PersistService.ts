@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import { join } from 'path'
 import { Key, Value, EMPTY_VALUE } from './@types'
 
-class CellService {
+class PersistService {
   private path2DirVendor: Record<string, Record<string, Value>> = {}
 
   getSync(path: string, key: Key): Value {
@@ -49,5 +49,5 @@ class CellService {
   }
 }
 
-const INSTANCE = new CellService()
+const INSTANCE = new PersistService()
 export { INSTANCE }
